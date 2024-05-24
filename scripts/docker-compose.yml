@@ -1,0 +1,25 @@
+version: '3'
+services:
+  backend:
+    image: shawyeok/128-slowbackend:backend
+    build:
+      context: ..
+      dockerfile: scripts/Dockerfile.backend
+
+  nginx:
+    image: shawyeok/128-slowbackend:nginx
+    build:
+      dockerfile: ./Dockerfile.nginx
+    depends_on:
+      - backend
+
+  client:
+    image: shawyeok/128-slowbackend:client
+    build:
+      dockerfile_inline: |
+        FROM python:3
+        RUN pip install requests
+        ADD client.py .
+        CMD ["python", "-u", "client.py"]
+    depends_on:
+      - nginx
